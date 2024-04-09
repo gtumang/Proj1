@@ -6,12 +6,13 @@ from scipy.spatial import distance as dist
 from imutils import perspective, contours, grab_contours, is_cv2
 import numpy as np
 
-def nmr_de_blobs (thresh):
+
+def nmr_de_blobs(thresh):
 
     img1_eros = thresh
-    kernel = np.ones((5,5), np.uint8)
-    img1_eros = cv2.erode(img1_eros, kernel, iterations = 5)
-    img1_eros = cv2.dilate(img1_eros, kernel, iterations = 4)
+    kernel = np.ones((5, 5), np.uint8)
+    img1_eros = cv2.erode(img1_eros, kernel, iterations=5)
+    img1_eros = cv2.dilate(img1_eros, kernel, iterations=4)
 
     # Set up the detector with default parameters.
     params = cv2.SimpleBlobDetector_Params()
@@ -46,12 +47,13 @@ def nmr_de_blobs (thresh):
     # Detect blobs
 
     KP = detector.detect(img1_eros)
-    nmr = len(KP) 
+    nmr = len(KP)
 
     return nmr
 
-def acha_azuis (img):
-    ret, mask = cv2.threshold(img[:, :,0], 100, 255, cv2.THRESH_BINARY)
+
+def acha_azuis(img):
+    ret, mask = cv2.threshold(img[:, :, 0], 100, 255, cv2.THRESH_BINARY)
 
     mask3 = np.zeros_like(img)
     mask3[:, :, 0] = mask
@@ -62,18 +64,19 @@ def acha_azuis (img):
     blue = cv2.bitwise_and(img, mask3)
 
     hsv = cv2.cvtColor(blue, cv2.COLOR_BGR2HSV)
-    h,s,v = cv2.split(hsv)
+    h, s, v = cv2.split(hsv)
 
     h_mask = cv2.inRange(s, 0, 100)
 
-    kernel = np.ones((3,3), np.uint8)
-    h_mask = cv2.dilate(h_mask, kernel, iterations = 1)
+    kernel = np.ones((3, 3), np.uint8)
+    h_mask = cv2.dilate(h_mask, kernel, iterations=1)
     # h_mask = cv2.erode(h_mask, kernel, iterations = 3)
 
     return h_mask
 
-def acha_verdes (img):
-    ret, mask = cv2.threshold(img[:, :,1], 100, 255, cv2.THRESH_BINARY)
+
+def acha_verdes(img):
+    ret, mask = cv2.threshold(img[:, :, 1], 100, 255, cv2.THRESH_BINARY)
 
     mask3 = np.zeros_like(img)
     mask3[:, :, 0] = mask
@@ -84,18 +87,19 @@ def acha_verdes (img):
     green = cv2.bitwise_and(img, mask3)
 
     hsv = cv2.cvtColor(green, cv2.COLOR_BGR2HSV)
-    h,s,v = cv2.split(hsv)
+    h, s, v = cv2.split(hsv)
 
     h_mask = cv2.inRange(s, 0, 100)
 
-    kernel = np.ones((3,3), np.uint8)
-    h_mask = cv2.dilate(h_mask, kernel, iterations = 1)
+    kernel = np.ones((3, 3), np.uint8)
+    h_mask = cv2.dilate(h_mask, kernel, iterations=1)
     # h_mask = cv2.erode(h_mask, kernel, iterations = 3)
 
     return h_mask
 
-def acha_vermelhos (img):
-    ret, mask = cv2.threshold(img[:, :,2], 100, 255, cv2.THRESH_BINARY)
+
+def acha_vermelhos(img):
+    ret, mask = cv2.threshold(img[:, :, 2], 100, 255, cv2.THRESH_BINARY)
 
     mask3 = np.zeros_like(img)
     mask3[:, :, 0] = mask
@@ -106,17 +110,18 @@ def acha_vermelhos (img):
     green = cv2.bitwise_and(img, mask3)
 
     hsv = cv2.cvtColor(green, cv2.COLOR_BGR2HSV)
-    h,s,v = cv2.split(hsv)
+    h, s, v = cv2.split(hsv)
 
     h_mask = cv2.inRange(s, 0, 100)
 
-    kernel = np.ones((3,3), np.uint8)
-    h_mask = cv2.dilate(h_mask, kernel, iterations = 1)
+    kernel = np.ones((3, 3), np.uint8)
+    h_mask = cv2.dilate(h_mask, kernel, iterations=1)
     # h_mask = cv2.erode(h_mask, kernel, iterations = 3)
 
     return h_mask
 
-def filtro_media (m, img):
+
+def filtro_media(m, img):
     (h, w) = img.shape
 
     #### KERNEL ####
@@ -124,11 +129,11 @@ def filtro_media (m, img):
     # Kernel creation
 
     d = int((m-1)/2)
-    kernel = np.ones((m,m), dtype="int16")/m**2
-    #print("kernel_x: \n", kernel)
+    kernel = np.ones((m, m), dtype="int16")/m**2
+    # print("kernel_x: \n", kernel)
 
     # Init processed figure
-    fig_out = np.zeros((h,w), dtype="uint8")
+    fig_out = np.zeros((h, w), dtype="uint8")
 
     # Image reading
 
@@ -139,11 +144,12 @@ def filtro_media (m, img):
             prod_img_ker = kernel * secao_img
             somatorio = prod_img_ker.sum()
 
-            fig_out[i,j] = somatorio
+            fig_out[i, j] = somatorio
 
     return fig_out
 
-def filtro_mediana (m, img):
+
+def filtro_mediana(m, img):
     (h, w) = img.shape
 
     #### KERNEL ####
@@ -151,11 +157,11 @@ def filtro_mediana (m, img):
     # Kernel creation
 
     d = int((m-1)/2)
-    kernel = np.ones((m,m), dtype="int16")/m**2
-    #print("kernel_x: \n", kernel)
+    kernel = np.ones((m, m), dtype="int16")/m**2
+    # print("kernel_x: \n", kernel)
 
     # Init processed figure
-    fig_out = np.zeros((h,w), dtype="uint8")
+    fig_out = np.zeros((h, w), dtype="uint8")
 
     # Image reading
 
@@ -166,11 +172,12 @@ def filtro_mediana (m, img):
             prod_img_ker = kernel * secao_img
             mediana = np.median(prod_img_ker)
 
-            fig_out[i,j] = mediana
+            fig_out[i, j] = mediana
 
     return fig_out
 
-def filtro_prewitt_sobel_abs (m, img, kernel):
+
+def filtro_prewitt_sobel_abs(m, img, kernel):
     (h, w) = img.shape
 
     #### KERNEL ####
@@ -178,10 +185,10 @@ def filtro_prewitt_sobel_abs (m, img, kernel):
     # Kernel creation
 
     d = int((m-1)/2)
-    #print("kernel_x: \n", kernel)
+    # print("kernel_x: \n", kernel)
 
     # Init processed figure
-    fig_out = np.zeros((h,w), dtype="uint8")
+    fig_out = np.zeros((h, w), dtype="uint8")
 
     # Image reading
 
@@ -192,14 +199,16 @@ def filtro_prewitt_sobel_abs (m, img, kernel):
             prod_img_ker = kernel * secao_img
             somatorio = prod_img_ker.sum()
 
-            fig_out[i,j] = abs(somatorio)
+            fig_out[i, j] = abs(somatorio)
 
     return fig_out
 
-def midpoint(ptA, ptB):
-	return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
-def encontra_tamanhos (image): # COLORIDA #
+def midpoint(ptA, ptB):
+    return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
+
+
+def encontra_tamanhos(image):  # COLORIDA #
 
     # USAGE
     # python object_size.py --image images/example_01.png --width 0.955
@@ -222,13 +231,13 @@ def encontra_tamanhos (image): # COLORIDA #
 
     # perform edge detection, then perform a dilation + erosion to
     # close gaps in between object edges
-    edged = cv2.Canny(gray, 50, 100)
+    edged = cv2.Canny(gray, 50, 170)
     edged = cv2.dilate(edged, None, iterations=1)
     edged = cv2.erode(edged, None, iterations=1)
 
     # find contours in the edge map
     cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE)
+                            cv2.CHAIN_APPROX_SIMPLE)
     cnts = grab_contours(cnts)
 
     # sort the contours from left-to-right and initialize the
@@ -280,9 +289,9 @@ def encontra_tamanhos (image): # COLORIDA #
 
         # draw lines between the midpoints
         cv2.line(orig, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
-            (255, 0, 255), 2)
+                 (255, 0, 255), 2)
         cv2.line(orig, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
-            (255, 0, 255), 2)
+                 (255, 0, 255), 2)
 
         # compute the Euclidean distance between the midpoints
         dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
@@ -300,18 +309,20 @@ def encontra_tamanhos (image): # COLORIDA #
 
     return orig, width, height
 
-def analisa_vermelho (estampa1):
+
+def analisa_vermelho(estampa1):
     (h, w) = estampa1.shape
 
-    ret,thresh1 = cv2.threshold(estampa1,90,255,0)
+    ret, thresh1 = cv2.threshold(estampa1, 90, 255, 0)
 
-    kernel = np.ones((3,3), np.uint8)
-    img1_eros = cv2.dilate(thresh1, kernel, iterations = 2)
-    img1_eros = cv2.erode(thresh1, kernel, iterations = 7)
+    kernel = np.ones((3, 3), np.uint8)
+    img1_eros = cv2.dilate(thresh1, kernel, iterations=2)
+    img1_eros = cv2.erode(thresh1, kernel, iterations=7)
 
     # Kernel creation
 
-    kernel_mascara_laplace = np.array([[0,1,0],[1,-4,1],[0,1,0]], dtype="int16")
+    kernel_mascara_laplace = np.array(
+        [[0, 1, 0], [1, -4, 1], [0, 1, 0]], dtype="int16")
 
     fig_out = filtro_prewitt_sobel_abs(3, thresh1, kernel_mascara_laplace)
 
@@ -332,12 +343,13 @@ def analisa_vermelho (estampa1):
     KP = detector.detect(img1_eros)
     flag = False
 
-    if len(KP)!= 0:
+    if len(KP) != 0:
         flag = True
-    
+
     return flag
 
-def analisa_amassada (width_ref, height_ref, width_am, height_am):
+
+def analisa_amassada(width_ref, height_ref, width_am, height_am):
     if width_am <= width_ref+4 and height_am <= height_ref+4 and width_am > width_ref-4 and height_am > height_ref-4:
         return True
     else:
